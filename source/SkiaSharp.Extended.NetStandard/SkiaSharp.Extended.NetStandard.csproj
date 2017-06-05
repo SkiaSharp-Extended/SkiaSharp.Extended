@@ -25,4 +25,5 @@
   <ItemGroup>
     <PackageReference Include="SkiaSharp" Version="1.58.0" />
   </ItemGroup>
+  <Import Project="..\SkiaSharp.Extended.Shared\SkiaSharp.Extended.Shared.projitems" Label="Shared" />
 </Project>
