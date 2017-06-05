@@ -6,8 +6,8 @@ Task("Build")
     .Does(() =>
 {
     // build the PCL solution
-    NuGetRestore("./source/SkiaSharp.Extended.sln");
-    DotNetBuild("./source/SkiaSharp.Extended.sln", settings => settings.SetConfiguration("Release"));
+    NuGetRestore("./source/SkiaSharp.Extended.NetFramework.sln");
+    DotNetBuild("./source/SkiaSharp.Extended.NetFramework.sln", settings => settings.SetConfiguration("Release"));
 
     // copy output
     EnsureDirectoryExists("./output/portable");
