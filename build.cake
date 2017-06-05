@@ -1,3 +1,5 @@
+#tool "nuget:?package=NUnit.ConsoleRunner"
+
 var target = Argument("target", "Default");
 
 Task("Build")
@@ -24,9 +26,24 @@ Task("Package")
     .IsDependentOn("Build")
     .Does(() =>
 {
+    // create the package
     NuGetPack ("./nuget/SkiaSharp.Extended.nuspec", new NuGetPackSettings { 
         OutputDirectory = "./output/",
         BasePath = "./",
+    });
+});
+
+Task("Test")
+    .IsDependentOn("Build")
+    .Does(() =>
+{
+    // build the tests
+    NuGetRestore("./tests/SkiaSharp.Extended.Tests.sln");
+    DotNetBuild("./tests/SkiaSharp.Extended.Tests.sln", settings => settings.SetConfiguration("Release"));
+
+    // run the tests
+    NUnit3("./tests/**/bin/Release/*.Tests.dll", new NUnit3Settings {
+        Results = "./output/TestResult.xml"
     });
 });
 
@@ -42,6 +59,7 @@ Task("Clean")
 
 Task("Default")
     .IsDependentOn("Build")
-    .IsDependentOn("Package");
+    .IsDependentOn("Package")
+    .IsDependentOn("Test");
 
 RunTarget(target);
