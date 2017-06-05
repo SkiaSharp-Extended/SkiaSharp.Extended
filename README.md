@@ -39,8 +39,8 @@ canvas.DrawStar(
 ## Building
 
 Building SkiaSharp.Extended just requires that [.NET Core][netcore] be 
-installed. Then, either open the solution `SkiaSharp.Extended.sln` or
-run the build script:
+installed. Then, either open the solution `source/SkiaSharp.Extended.sln` 
+or run the build script:
 
 Mac/Linux:
 
