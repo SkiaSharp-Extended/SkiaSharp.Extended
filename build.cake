@@ -1,65 +1,45 @@
+#addin "Cake.FileHelpers"
 #tool "nuget:?package=NUnit.ConsoleRunner"
 
 var target = Argument("target", "Default");
+var configuration = Argument("configuration", "Release");
+var verbosity = Argument("verbosity", "Verbose");
 
-Task("Build")
-    .Does(() =>
-{
-    // build the PCL solution
-    NuGetRestore("./source/SkiaSharp.Extended.NetFramework.sln");
-    DotNetBuild("./source/SkiaSharp.Extended.NetFramework.sln", settings => settings.SetConfiguration("Release"));
-
-    // copy output
-    EnsureDirectoryExists("./output/portable");
-    CopyFileToDirectory("./source/SkiaSharp.Extended/bin/Release/SkiaSharp.Extended.dll", "./output/portable");
-
-    // build the .NET Standard solution
-    DotNetCoreRestore("./source/SkiaSharp.Extended.NetStandard");
-    DotNetCoreBuild("./source/SkiaSharp.Extended.NetStandard.sln", new DotNetCoreBuildSettings { Configuration = "Release" });
-
-    // copy output
-    EnsureDirectoryExists("./output/netstandard");
-    CopyFileToDirectory("./source/SkiaSharp.Extended.NetStandard/bin/Release/SkiaSharp.Extended.dll", "./output/netstandard");
-});
-
-Task("Package")
-    .IsDependentOn("Build")
-    .Does(() =>
-{
-    // create the package
-    NuGetPack ("./nuget/SkiaSharp.Extended.nuspec", new NuGetPackSettings { 
-        OutputDirectory = "./output/",
-        BasePath = "./",
-    });
-});
-
-Task("Test")
-    .IsDependentOn("Build")
-    .Does(() =>
-{
-    // build the tests
-    NuGetRestore("./tests/SkiaSharp.Extended.Tests.sln");
-    DotNetBuild("./tests/SkiaSharp.Extended.Tests.sln", settings => settings.SetConfiguration("Release"));
-
-    // run the tests
-    NUnit3("./tests/**/bin/Release/*.Tests.dll", new NUnit3Settings {
-        Results = "./output/TestResult.xml"
-    });
-});
-
-Task("Clean")
-    .Does(() =>
-{
-    CleanDirectories ("./source/*/bin");
-    CleanDirectories ("./source/*/obj");
-    CleanDirectories ("./source/packages");
-
-    CleanDirectories ("./output");
-});
+var names = Argument("Names", Argument("names", ""));
 
 Task("Default")
-    .IsDependentOn("Build")
-    .IsDependentOn("Package")
-    .IsDependentOn("Test");
+    .Does(() =>
+{
+    DirectoryPathCollection projects;
+    if (string.IsNullOrWhiteSpace(names)) {
+        projects = GetDirectories("./SkiaSharp.Extended.*");
+        projects.Add("./SkiaSharp.Extended");
+    } else {
+        projects = GetDirectories(names);
+    }
 
-RunTarget(target);
+    if (projects.Count == 0) {
+        Error("No projects matched the names: '{0}'.", names);
+    }
+
+    foreach (var projectDirectory in projects) {
+        var directory = MakeAbsolute(projectDirectory);
+        var cake = directory.CombineWithFilePath("build.cake");
+        var output = "./output/" + directory.GetDirectoryName();
+
+        Information("Building {0}...", cake);
+        CakeExecuteScript(cake, new CakeSettings { 
+            Arguments = new Dictionary<string, string> {
+                { "target", target },
+                { "configuration", configuration },
+                { "verbosity", verbosity },
+            }
+        });
+
+        Information("Copying output for {0} to {1}...", cake, output);
+        EnsureDirectoryExists(output);
+        CopyDirectory(directory.Combine("output"), output);
+    }
+});
+
+RunTarget("Default");

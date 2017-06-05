@@ -75,6 +75,9 @@ if [ ! -f "$NUGET_EXE" ]; then
     fi
 fi
 
+# Save nuget.exe path to environment to be available to child processed
+export NUGET_EXE=$NUGET_EXE
+
 # Restore tools from NuGet.
 pushd "$TOOLS_DIR" >/dev/null
 if [ ! -f "$PACKAGES_CONFIG_MD5" ] || [ "$( cat "$PACKAGES_CONFIG_MD5" | sed 's/\r$//' )" != "$( $MD5_EXE "$PACKAGES_CONFIG" | awk '{ print $1 }' )" ]; then

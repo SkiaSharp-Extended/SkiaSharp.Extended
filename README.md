@@ -1,46 +1,14 @@
 # SkiaSharp.Extended
 
-[![SkiaSharp](https://img.shields.io/nuget/vpre/SkiaSharp.Extended.svg?maxAge=2592000)](https://www.nuget.org/packages/SkiaSharp.Extended)
-
-**SkiaSharp.Extended** is a collection some cool functions that may be 
-useful to some apps.
-
-There are a few helper methods that can be used to create geometric 
-shapes in the `SKGeometry` type:
-
- - `CreateSectorPath` - 
-   creates a path with the shape of sector/section of a doughnut/pie 
-   chart
- - `CreatePiePath` - 
-   creates a path with the shape of a doughnut/pie chart
- - `CreateSquarePath` - 
-   creates a path with the shape of a square
- - `CreateRectanglePath` - 
-   creates a path with the shape of a rectangle
- - `CreateTrianglePath` - 
-   creates a path with the shape of a triangle
- - `CreateRegularPolygonPath` - 
-   creates a path with the shape of some regular polygon
- - `CreateRegularStarPath` - 
-   creates a path with the shape of a square
-
-Some of these shapes can also be draw directly on a `SKCanvas` 
-using the extensions methods:
-
-```csharp
-SKCanvas canvas = ...
-canvas.DrawStar(
-    100, 100, // x, y
-    100,      // outer radius
-    50,       // inner radius
-    5);       // points
-```
+A simple way to draw a string that contains icons inline with normal 
+characters.
 
 ## Building
 
-Building SkiaSharp.Extended just requires that [.NET Core][netcore] be 
-installed. Then, either open the solution `source/SkiaSharp.Extended.sln` 
-or run the build script:
+_Make sure [.NET Core][netcore] is installed._
+
+The root just contains a build script that will build all the other 
+scripts. To build everything, just run the command-line:
 
 Mac/Linux:
 
@@ -49,6 +17,18 @@ Mac/Linux:
 Windows:
 
     > .\build.ps1
+
+If only a specific project, or a set of projects, are to be built, 
+then pass a value to the `names` argument:
+
+
+Mac/Linux:
+
+    $ ./build.sh -names=SkiaSharp.Extended.Iconify
+
+Windows:
+
+    > .\build.ps1 -Names=SkiaSharp.Extended.Iconify
 
 ## License
 
